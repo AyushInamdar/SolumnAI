@@ -1,0 +1,5 @@
+Trial sql-inject-search-v4__F2AtktH failed: Docker compose command failed for environment sql-inject-search-v4. Command: docker compose --project-name sql-inject-search-v4__f2atkth__env --project-directory /mnt/c/SolumnAI/environments/rles/sql-inject-search-v4/environment -f /tmp/tmpjwfryb8a/sql-inject-search-v4__F2AtktH__env-docker-compose-resources.json -f /home/ayushunix/.local/lib/python3.14/site-packages/harbor/environments/docker/docker-compose-build.yaml -f /tmp/tmpsf0gv8x1/docker-compose-environment.json -f /tmp/tmpco26uuyz/docker-compose-mounts.json build. Return code: 1. Stdout:  Image sql-inject-search-v4__f2atkth__env-main Building 
+failed to get current working directory: getwd: no such file or directory
+
+. Stderr: None. 
+Collecting main service artifacts

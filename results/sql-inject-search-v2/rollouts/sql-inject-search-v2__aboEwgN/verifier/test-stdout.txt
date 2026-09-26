@@ -1,0 +1,18 @@
+ * Serving Flask app 'app'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.19.0.2:5000
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [26/Sep/2026 21:42:55] "GET /api/orders/search?customer=acme HTTP/1.1" 200 -
+[PASS] customer search works
+127.0.0.1 - - [26/Sep/2026 21:42:55] "GET /api/orders/search?customer=corp&from_date=2024-01-01&to_date=2024-12-31 HTTP/1.1" 200 -
+[PASS] date range filter works
+127.0.0.1 - - [26/Sep/2026 21:42:55] "GET /api/orders/search?customer='+UNION+SELECT+1,'injected','bad',0.0,'pwned'+-- HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:42:55] "GET /api/orders HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 21:42:55] "GET /api/orders/search?customer='+OR+'1'%3d'1 HTTP/1.1" 200 -
+[PASS] Tautology blocked
+127.0.0.1 - - [26/Sep/2026 21:42:55] "GET /api/orders HTTP/1.1" 200 -
+[PASS] GET /api/orders still works
+reward: 1

@@ -1,0 +1,7 @@
+Backed up 4 files.
+[PASS] backup copied artifacts
+Backed up 0 files.
+Backed up 4 files.
+Building frontend...
+Build complete.
+[PASS] build works

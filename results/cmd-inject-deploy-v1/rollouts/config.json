@@ -1,0 +1,20 @@
+{
+    "job_name": "rollouts",
+    "jobs_dir": "/mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v1",
+    "n_attempts": 6,
+    "n_concurrent_trials": 2,
+    "agents": [
+        {
+            "name": "terminus-2",
+            "model_name": "openai/gpt-5.5"
+        }
+    ],
+    "datasets": [
+        {
+            "path": "/mnt/c/SolumnAI/environments/rles",
+            "task_names": [
+                "cmd-inject-deploy-v1"
+            ]
+        }
+    ]
+}

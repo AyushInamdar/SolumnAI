@@ -1,0 +1,102 @@
+{
+    "id": "633262e8-f8d8-49c4-9e5d-8409f474c040",
+    "task_name": "solumn/sql-inject-search-v4",
+    "trial_name": "sql-inject-search-v4__F2AtktH",
+    "trial_uri": "file:///mnt/c/SolumnAI/jobs_final_7/sql-inject-search-v4/rollouts/sql-inject-search-v4__F2AtktH",
+    "task_id": {
+        "path": "/mnt/c/SolumnAI/environments/rles/sql-inject-search-v4"
+    },
+    "source": "rles",
+    "task_checksum": "5a33952d17b0974bbafee73d93ecae84c683795ee11f0664b9eb0366ff4baddf",
+    "config": {
+        "task": {
+            "path": "/mnt/c/SolumnAI/environments/rles/sql-inject-search-v4",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": "rles"
+        },
+        "trial_name": "sql-inject-search-v4__F2AtktH",
+        "trials_dir": "/mnt/c/SolumnAI/jobs_final_7/sql-inject-search-v4/rollouts",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "terminus-2",
+            "import_path": null,
+            "model_name": "openai/gpt-5.5",
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "mcp_servers": []
+        },
+        "user_agent": null,
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "extra_instructions": [],
+        "job_id": "e0a7c090-36e0-4d4b-8c50-40d12bba7dfe",
+        "source_trial": null
+    },
+    "agent_info": {
+        "name": "terminus-2",
+        "version": "2.0.0",
+        "model_info": {
+            "name": "gpt-5.5",
+            "provider": "openai"
+        }
+    },
+    "agent_result": null,
+    "verifier_result": null,
+    "verifier_environment_mode": "shared",
+    "exception_info": {
+        "exception_type": "RuntimeError",
+        "exception_message": "Docker compose command failed for environment sql-inject-search-v4. Command: docker compose --project-name sql-inject-search-v4__f2atkth__env --project-directory /mnt/c/SolumnAI/environments/rles/sql-inject-search-v4/environment -f /tmp/tmpjwfryb8a/sql-inject-search-v4__F2AtktH__env-docker-compose-resources.json -f /home/ayushunix/.local/lib/python3.14/site-packages/harbor/environments/docker/docker-compose-build.yaml -f /tmp/tmpsf0gv8x1/docker-compose-environment.json -f /tmp/tmpco26uuyz/docker-compose-mounts.json build. Return code: 1. Stdout:  Image sql-inject-search-v4__f2atkth__env-main Building \nfailed to get current working directory: getwd: no such file or directory\n\n. Stderr: None. ",
+        "exception_traceback": "Traceback (most recent call last):\n  File \"/home/ayushunix/.local/lib/python3.14/site-packages/harbor/trial/trial.py\", line 415, in run\n    await self._prepare()\n  File \"/home/ayushunix/.local/lib/python3.14/site-packages/harbor/trial/trial.py\", line 453, in _prepare\n    await self._setup_agent_environment()\n  File \"/home/ayushunix/.local/lib/python3.14/site-packages/harbor/trial/trial.py\", line 1542, in _setup_agent_environment\n    await self._start_agent_environment()\n  File \"/home/ayushunix/.local/lib/python3.14/site-packages/harbor/trial/trial.py\", line 1548, in _start_agent_environment\n    await asyncio.wait_for(\n    ...<4 lines>...\n    )\n  File \"/usr/lib/python3.14/asyncio/tasks.py\", line 488, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/home/ayushunix/.local/lib/python3.14/site-packages/harbor/environments/docker/docker.py\", line 981, in start\n    await self._run_docker_compose_command([\"build\"])\n  File \"/home/ayushunix/.local/lib/python3.14/site-packages/harbor/environments/docker/docker.py\", line 704, in _run_docker_compose_command\n    raise RuntimeError(\n    ...<5 lines>...\n    )\nRuntimeError: Docker compose command failed for environment sql-inject-search-v4. Command: docker compose --project-name sql-inject-search-v4__f2atkth__env --project-directory /mnt/c/SolumnAI/environments/rles/sql-inject-search-v4/environment -f /tmp/tmpjwfryb8a/sql-inject-search-v4__F2AtktH__env-docker-compose-resources.json -f /home/ayushunix/.local/lib/python3.14/site-packages/harbor/environments/docker/docker-compose-build.yaml -f /tmp/tmpsf0gv8x1/docker-compose-environment.json -f /tmp/tmpco26uuyz/docker-compose-mounts.json build. Return code: 1. Stdout:  Image sql-inject-search-v4__f2atkth__env-main Building \nfailed to get current working directory: getwd: no such file or directory\n\n. Stderr: None. \n",
+        "occurred_at": "2026-09-26T21:45:36.204636Z"
+    },
+    "started_at": "2026-09-26T21:45:29.308146Z",
+    "finished_at": "2026-09-26T21:45:38.281382Z",
+    "environment_setup": {
+        "started_at": "2026-09-26T21:45:30.432406Z",
+        "finished_at": "2026-09-26T21:45:36.200251Z"
+    },
+    "agent_setup": null,
+    "agent_execution": null,
+    "verifier": null,
+    "step_results": null
+}

@@ -41,7 +41,7 @@ def create_product():
     return jsonify({"status": "created"}), 201
 
 
-# TODO: Add search endpoint — see db.execute_raw() in db.py for a quick approach
+# TODO: Add search endpoint — check db.py for available helpers
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)

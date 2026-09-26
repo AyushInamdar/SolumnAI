@@ -1,0 +1,4 @@
+[PASS] validate completed successfully
+[FAIL] COMMAND INJECTION — canary deleted via file_pattern
+Built api-service.
+[PASS] build works

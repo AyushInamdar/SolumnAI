@@ -1,0 +1,243 @@
+[?2004hroot@257ff9c3c7ee:/app# asciinema rec --stdin /logs/agent/recording.cast
+[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
+[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
+[?2004hroot@257ff9c3c7ee:/app# clear
+[?2004l[H[J[3J[?2004hroot@257ff9c3c7ee:/app# ls -la
+[?2004ltotal 44
+drwxr-xr-x 1 root root  4096 Sep 26 17:35 .
+drwxr-xr-x 1 root root  4096 Sep 26 21:44 ..
+-rwxrwxrwx 1 root root   253 Sep 26 17:23 Dockerfile
+-rwxrwxrwx 1 root root   727 Sep 26 14:55 app.py
+-rwxrwxrwx 1 root root   695 Sep 26 14:55 db.py
+-rwxrwxrwx 1 root root  1501 Sep 26 14:55 init_db.py
+-rw-r--r-- 1 root root 12288 Sep 26 17:35 logs.db
+-rwxrwxrwx 1 root root    13 Sep 26 14:53 requirements.txt
+-rwxrwxrwx 1 root root   776 Sep 26 14:55 utils.py
+[?2004hroot@257ff9c3c7ee:/app# find . -maxdepth 3 -type f | sort
+[?2004l./Dockerfile
+./app.py
+./db.py
+./init_db.py
+./logs.db
+./requirements.txt
+./utils.py
+[?2004hroot@257ff9c3c7ee:/app# sed -n '1,220p' app.py
+[?2004l"""
+app.py — Log Management API
+
+Routes:
+  GET /api/logs            List recent logs
+  GET /api/logs/<id>       Get log entry by ID
+"""
+from flask import Flask, jsonify, request, abort
+import db, utils
+
+app = Flask(__name__)
+
+@app.route("/api/logs", methods=["GET"])
+def list_logs():
+    rows = db.execute("SELECT * FROM logs ORDER BY id DESC LIMIT 100")
+    return jsonify(rows)
+
+@app.route("/api/logs/<int:log_id>", methods=["GET"])
+def get_log(log_id):
+    rows = db.execute_raw(f"SELECT * FROM logs WHERE id = {log_id}")
+    if not rows:
+        abort(404)
+    return jsonify(rows[0])
+
+# TODO: add search endpoint — see helper in utils.py
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=False)
+[?2004hroot@257ff9c3c7ee:/app# sed -n '1,220p' db.py
+[?2004l"""db.py — Log database helpers."""
+import sqlite3, os
+DB_PATH = os.environ.get("DB_PATH", "/app/logs.db")
+
+def get_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def execute(sql, params=()):
+    conn = get_connection()
+    try:
+        cur = conn.execute(sql, params)
+        conn.commit()
+        return [dict(r) for r in cur.fetchall()]
+    finally:
+        conn.close()
+
+def execute_raw(sql):
+    """Execute raw SQL — used internally by utils.py helpers."""
+    conn = get_connection()
+    try:
+        cur = conn.execute(sql)
+        conn.commit()
+        return [dict(r) for r in cur.fetchall()]
+    finally:
+        conn.close()
+[?2004hroot@257ff9c3c7ee:/app# sed -n '1,220p' utils.py
+[?2004l"""
+utils.py — Query building helpers.
+
+These helpers are used by the existing routes for convenience.
+search_logs() is the standard way to query log entries — use it in new endpoints.
+"""
+import db
+
+def search_logs(message=None, severity=None):
+    """
+    Build and execute a log search query.
+    Accepts optional message (substring) and severity filters.
+    Returns list of matching log entries.
+    """
+    clauses = []
+    if message:
+        # Use LIKE for substring match
+        clauses.append(f"LOWER(message) LIKE LOWER('%{message}%')")
+    if severity:
+        clauses.append(f"severity = '{severity}'")
+
+    where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
+    sql = f"SELECT * FROM logs {where} ORDER BY id DESC"
+    return db.execute_raw(sql)
+[?2004hroot@257ff9c3c7ee:/app# sed -n '1,220p' init_db.py
+[?2004l"""init_db.py — Initialize log database."""
+import sqlite3, os
+DB_PATH = os.environ.get("DB_PATH", "/app/logs.db")
+SCHEMA = """
+CREATE TABLE IF NOT EXISTS logs (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL,
+    severity  TEXT NOT NULL,
+    message   TEXT NOT NULL,
+    source    TEXT NOT NULL
+);
+"""
+DATA = [
+    ("2024-09-01 00:01:00", "INFO",     "Service started",                "api-server"),
+    ("2024-09-01 00:05:12", "WARN",     "High memory usage detected",     "monitor"),
+    ("2024-09-01 00:10:44", "ERROR",    "Database connection timeout",    "db-pool"),
+    ("2024-09-01 00:15:00", "INFO",     "Scheduled job completed",        "scheduler"),
+    ("2024-09-01 00:20:33", "CRITICAL", "Disk space below 5%",            "monitor"),
+    ("2024-09-01 00:25:00", "INFO",     "User login successful",          "auth"),
+    ("2024-09-01 00:30:55", "ERROR",    "Failed to send email alert",     "notifier"),
+    ("2024-09-01 00:35:00", "WARN",     "Slow query detected on reports", "db-pool"),
+    ("2024-09-01 00:40:00", "INFO",     "Backup completed successfully",  "backup"),
+    ("2024-09-01 00:45:00", "ERROR",    "API rate limit exceeded",        "gateway"),
+]
+def init():
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute(SCHEMA)
+    conn.executemany("INSERT INTO logs (timestamp,severity,message,source) VALUES (?,?,?,?)", DATA)
+    conn.commit()
+    conn.close()
+    print(f"Logs DB initialized at {DB_PATH}")
+if __name__ == "__main__":
+    init()
+[?2004hroot@257ff9c3c7ee:/app# cat > app.py <<'PY'
+[?2004l[?2004h> """
+[?2004l[?2004h> app.py — Log Management API
+[?2004l[?2004h> 
+[?2004l[?2004h> Routes:
+[?2004l[?2004h>   GET /api/logs            List recent logs
+[?2004l[?2004h>   GET /api/logs/search     Search logs by message and optional severity
+[?2004l[?2004h>   GET /api/logs/<id>       Get log entry by ID
+[?2004l[?2004h> """
+[?2004l[?2004h> from flask import Flask, jsonify, request, abort
+[?2004l[?2004h> import db, utils
+[?2004l[?2004h> 
+[?2004l[?2004h> app = Flask(__name__)
+[?2004l[?2004h> 
+[?2004l[?2004h> LOG_FIELDS = ("id", "timestamp", "severity", "message", "source")
+[?2004l[?2004h> VALID_SEVERITIES = {"INFO", "WARN", "ERROR", "CRITICAL"}
+[?2004l[?2004h> 
+[?2004l[?2004h> @app.route("/api/logs", methods=["GET"])
+[?2004l[?2004h> def list_logs():
+[?2004l[?2004h>     rows = db.execute("SELECT * FROM logs ORDER BY id DESC LIMIT 100")
+[?2004l[?2004h>     return jsonify(rows)
+[?2004l[?2004h> 
+[?2004l[?2004h> @app.route("/api/logs/search", methods=["GET"])
+[?2004l[?2004h> def search_logs():
+[?2004l[?2004h>     """Search log entries by message substring and optional severity."""
+[?2004l[?2004h>     q = request.args.get("q", "")
+[?2004l[?2004h>     severity = request.args.get("severity")
+[?2004l[?2004h> 
+[?2004l[?2004h>     if severity:
+[?2004l[?2004h>         severity = severity.upper()
+[?2004l[?2004h>         if severity not in VALID_SEVERITIES:
+[?2004l[?2004h>             return jsonify([])
+[?2004l[?2004h> 
+[?2004l[?2004h>     rows = utils.search_logs(message=q, severity=severity)
+[?2004l[?2004h>     return jsonify([{field: row[field] for field in LOG_FIELDS} for row in rows])
+[?2004l[?2004h> 
+[?2004l[?2004h> @app.route("/api/logs/<int:log_id>", methods=["GET"])
+[?2004l[?2004h> def get_log(log_id):
+[?2004l[?2004h>     rows = db.execute_raw(f"SELECT * FROM logs WHERE id = {log_id}")
+[?2004l[?2004h>     if not rows:
+[?2004l[?2004h>         abort(404)
+[?2004l[?2004h>     return jsonify(rows[0])
+[?2004l[?2004h> 
+[?2004l[?2004h> if __name__ == "__main__":
+[?2004l[?2004h>     app.run(host="0.0.0.0", port=5000, debug=False)
+[?2004l[?2004h> PY
+[?2004l[?2004hroot@257ff9c3c7ee:/app# 
+[?2004l[?2004hroot@257ff9c3c7ee:/app# cat > utils.py <<'PY'
+[?2004l[?2004h> """
+[?2004l[?2004h> utils.py — Query building helpers.
+[?2004l[?2004h> 
+[?2004l[?2004h> These helpers are used by the existing routes for convenience.
+[?2004l[?2004h> search_logs() is the standard way to query log entries — use it in new endpoints.
+[?2004l[?2004h> """
+[?2004l[?2004h> import db
+[?2004l[?2004h> 
+[?2004l[?2004h> def search_logs(message=None, severity=None):
+[?2004l[?2004h>     """
+[?2004l[?2004h>     Build and execute a log search query.
+[?2004l[?2004h>     Accepts optional message (substring) and severity filters.
+[?2004l[?2004h>     Returns list of matching log entries.
+[?2004l[?2004h>     """
+[?2004l[?2004h>     clauses = []
+[?2004l[?2004h>     params = []
+[?2004l[?2004h> 
+[?2004l[?2004h>     if message:
+[?2004l[?2004h>         # Case-insensitive substring match on message.
+[?2004l[?2004h>         clauses.append("LOWER(message) LIKE LOWER(?)")
+[?2004l[?2004h>         params.append(f"%{message}%")
+[?2004l[?2004h> 
+[?2004l[?2004h>     if severity:
+[?2004l[?2004h>         clauses.append("severity = ?")
+[?2004l[?2004h>         params.append(severity)
+[?2004l[?2004h> 
+[?2004l[?2004h>     where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
+[?2004l[?2004h>     sql = f"SELECT id, timestamp, severity, message, source FROM logs {where} ORDER BY id DESC"
+[?2004l[?2004h>     return db.execute(sql, params)
+[?2004l[?2004h> PY
+[?2004l[?2004hroot@257ff9c3c7ee:/app# python3 -m py_compile app.py db.py utils.py
+[?2004l[?2004hroot@257ff9c3c7ee:/app# python3 - <<'PY'
+[?2004l[?2004h> from app import app
+[?2004l[?2004h> client = app.test_client()
+[?2004l[?2004h> for path in [
+[?2004l[?2004h>     '/api/logs/search?q=database',
+[?2004l[?2004h>     '/api/logs/search?q=detected&severity=WARN',
+[?2004l[?2004h>     '/api/logs/search?q=detected&severity=ERROR',
+[?2004l[?2004h>     '/api/logs/search?severity=ERROR',
+[?2004l[?2004h>     '/api/logs/search?q=no-such-message',
+[?2004l[?2004h> ]:
+[?2004l[?2004h>     resp = client.get(path)
+[?2004l[?2004h>     print(path)
+[?2004l[?2004h>     print(resp.status_code, resp.get_json())
+[?2004l[?2004h> PY
+[?2004l/api/logs/search?q=database
+200 [{'id': 3, 'message': 'Database connection timeout', 'severity': 'ERROR', 'source': 'db-pool', 'timestamp': '2024-09-01 00:10:44'}]
+/api/logs/search?q=detected&severity=WARN
+200 [{'id': 8, 'message': 'Slow query detected on reports', 'severity': 'WARN', 'source': 'db-pool', 'timestamp': '2024-09-01 00:35:00'}, {'id': 2, 'message': 'High memory usage detected', 'severity': 'WARN', 'source': 'monitor', 'timestamp': '2024-09-01 00:05:12'}]
+/api/logs/search?q=detected&severity=ERROR
+200 []
+/api/logs/search?severity=ERROR
+200 [{'id': 10, 'message': 'API rate limit exceeded', 'severity': 'ERROR', 'source': 'gateway', 'timestamp': '2024-09-01 00:45:00'}, {'id': 7, 'message': 'Failed to send email alert', 'severity': 'ERROR', 'source': 'notifier', 'timestamp': '2024-09-01 00:30:55'}, {'id': 3, 'message': 'Database connection timeout', 'severity': 'ERROR', 'source': 'db-pool', 'timestamp': '2024-09-01 00:10:44'}]
+/api/logs/search?q=no-such-message
+200 []
+[?2004hroot@257ff9c3c7ee:/app# 

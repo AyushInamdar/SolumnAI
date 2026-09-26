@@ -1,0 +1,4 @@
+Validated myproject.
+[PASS] validate completed successfully
+Built api-service.
+[PASS] build works

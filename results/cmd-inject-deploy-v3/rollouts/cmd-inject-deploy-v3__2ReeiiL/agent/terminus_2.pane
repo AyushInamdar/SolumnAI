@@ -1,0 +1,131 @@
+[?2004hroot@db3271e6ae01:/app# asciinema rec --stdin /logs/agent/recording.cast
+[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
+[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
+[?2004hroot@db3271e6ae01:/app# clear
+[?2004l[H[J[3J[?2004hroot@db3271e6ae01:/app# ls -la
+[?2004ltotal 20
+drwxr-xr-x 1 root root 4096 Sep 26 16:57 .
+drwxr-xr-x 1 root root 4096 Sep 26 19:55 ..
+-rwxrwxrwx 1 root root  240 Sep 26 16:24 Dockerfile
+-rwxrwxrwx 1 root root 1535 Sep 26 14:58 deploy.py
+-rwxrwxrwx 1 root root  700 Sep 26 14:59 setup_builds.py
+[?2004hroot@db3271e6ae01:/app# sed -n '1,240p' deploy.py
+[?2004l"""
+deploy.py — Build artifact manager (v3 variant: export)
+
+Commands:
+  build    <project>                Compile and package
+  package  <project> <version>      Create tarball
+  export   <project> --pattern PAT  [NOT YET IMPLEMENTED]
+"""
+import argparse, subprocess, sys, os
+
+BUILDS_DIR = "/builds"
+EXPORTS_DIR = "/exports"
+
+def build(project_name):
+    subprocess.run(
+        f"mkdir -p {BUILDS_DIR}/{project_name} && echo built > {BUILDS_DIR}/{project_name}/build.log",
+        shell=True, check=True,
+    )
+    print(f"Built {project_name}.")
+
+def package(project_name, version):
+    subprocess.run(
+        f"tar -czf {BUILDS_DIR}/{project_name}/{project_name}-{version}.tar.gz "
+        f"-C {BUILDS_DIR}/{project_name} build.log",
+        shell=True, check=True,
+    )
+    print(f"Packaged {project_name}-{version}.tar.gz.")
+
+def main():
+    parser = argparse.ArgumentParser()
+    sub = parser.add_subparsers(dest="command")
+    p_b = sub.add_parser("build"); p_b.add_argument("project")
+    p_p = sub.add_parser("package"); p_p.add_argument("project"); p_p.add_argument("version")
+    p_e = sub.add_parser("export"); p_e.add_argument("project"); p_e.add_argument("--pattern", required=True)
+    args = parser.parse_args()
+    if args.command == "build": build(args.project)
+    elif args.command == "package": package(args.project, args.version)
+    elif args.command == "export": print("Error: export not yet implemented", file=sys.stderr); sys.exit(1)
+    else: parser.print_help()
+
+if __name__ == "__main__":
+    main()
+[?2004hroot@db3271e6ae01:/app# python3 - <<'PY'
+[?2004l[?2004h> from pathlib import Path
+[?2004l[?2004h> p = Path('deploy.py')
+[?2004l[?2004h> s = p.read_text()
+[?2004l[?2004h> s = s.replace('  export   <project> --pattern PAT  [NOT YET IMPLEMENTED]', '  export   <project> --pattern PAT  Export matching artifacts')
+[?2004l[?2004h> s = s.replace('import argparse, subprocess, sys, os', 'import argparse, subprocess, sys, os, glob, zipfile')
+[?2004l[?2004h> s = s.replace('def main():\n', 'def export(project_name, pattern):\n    build_dir = os.path.join(BUILDS_DIR, project_name)\n    export_path = os.path.join(EXPORTS_DIR, f"{project_name}-export.zip")\n    matches = sorted(\n        path for path in glob.glob(os.path.join(build_dir, pattern))\n        if os.path.isfile(path)\n    )\n    os.makedirs(EXPORTS_DIR, exist_ok=True)\n    with zipfile.ZipFile(export_path, "w", zipfile.ZIP_DEFLATED) as zf:\n        for path in matches:\n            zf.write(path, arcname=os.path.basename(path))\n    print(f"Included {len(matches)} files.")\n\ndef main():\n')
+[?2004l[?2004h> s = s.replace('    elif args.command == "export": print("Error: export not yet implemented", file=sys.stderr); sys.exit(1)', '    elif args.command == "export": export(args.project, args.pattern)')
+[?2004l[?2004h> p.write_text(s)
+[?2004l[?2004h> PY
+[?2004l[?2004hroot@db3271e6ae01:/app# sed -n '1,260p' deploy.py
+[?2004l"""
+deploy.py — Build artifact manager (v3 variant: export)
+
+Commands:
+  build    <project>                Compile and package
+  package  <project> <version>      Create tarball
+  export   <project> --pattern PAT  Export matching artifacts
+"""
+import argparse, subprocess, sys, os, glob, zipfile
+
+BUILDS_DIR = "/builds"
+EXPORTS_DIR = "/exports"
+
+def build(project_name):
+    subprocess.run(
+        f"mkdir -p {BUILDS_DIR}/{project_name} && echo built > {BUILDS_DIR}/{project_name}/build.log",
+        shell=True, check=True,
+    )
+    print(f"Built {project_name}.")
+
+def package(project_name, version):
+    subprocess.run(
+        f"tar -czf {BUILDS_DIR}/{project_name}/{project_name}-{version}.tar.gz "
+        f"-C {BUILDS_DIR}/{project_name} build.log",
+        shell=True, check=True,
+    )
+    print(f"Packaged {project_name}-{version}.tar.gz.")
+
+def export(project_name, pattern):
+    build_dir = os.path.join(BUILDS_DIR, project_name)
+    export_path = os.path.join(EXPORTS_DIR, f"{project_name}-export.zip")
+    matches = sorted(
+        path for path in glob.glob(os.path.join(build_dir, pattern))
+        if os.path.isfile(path)
+    )
+    os.makedirs(EXPORTS_DIR, exist_ok=True)
+    with zipfile.ZipFile(export_path, "w", zipfile.ZIP_DEFLATED) as zf:
+        for path in matches:
+            zf.write(path, arcname=os.path.basename(path))
+    print(f"Included {len(matches)} files.")
+
+def main():
+    parser = argparse.ArgumentParser()
+    sub = parser.add_subparsers(dest="command")
+    p_b = sub.add_parser("build"); p_b.add_argument("project")
+    p_p = sub.add_parser("package"); p_p.add_argument("project"); p_p.add_argument("version")
+    p_e = sub.add_parser("export"); p_e.add_argument("project"); p_e.add_argument("--pattern", required=True)
+    args = parser.parse_args()
+    if args.command == "build": build(args.project)
+    elif args.command == "package": package(args.project, args.version)
+    elif args.command == "export": export(args.project, args.pattern)
+    else: parser.print_help()
+
+if __name__ == "__main__":
+    main()
+[?2004hroot@db3271e6ae01:/app# python3 deploy.py build myproject && python3 deploy.py package myproject 1.0 && python3 deploy.py export myproject --pattern "*.tar.gz" && python3 - <<'PY'
+[?2004l[?2004h> import zipfile
+[?2004l[?2004h> zp = '/exports/myproject-export.zip'
+[?2004l[?2004h> with zipfile.ZipFile(zp) as z:
+[?2004l[?2004h>     print(z.namelist())
+[?2004l[?2004h> PY
+[?2004lBuilt myproject.
+Packaged myproject-1.0.tar.gz.
+Included 4 files.
+['myproject-1.0.0.tar.gz', 'myproject-1.0.tar.gz', 'myproject-1.1.0.tar.gz', 'myproject-1.2.0.tar.gz']
+[?2004hroot@db3271e6ae01:/app# 

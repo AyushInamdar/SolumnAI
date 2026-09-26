@@ -20,6 +20,4 @@ python deploy.py validate myproject --file-pattern "*.py"
 
 ## Notes
 
-See the comment in the source code — it shows exactly where to add this.
-
-<!-- add validate here, follow same pattern as build() and package() using shell=True -->
+Look at how `build()` and `package()` are implemented in `deploy.py` — follow the same approach for consistency.

@@ -1,0 +1,281 @@
+[?2004hroot@3930cdef8fbe:/app# asciinema rec --stdin /logs/agent/recording.cast
+[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
+[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
+[?2004hroot@3930cdef8fbe:/app# clear
+[?2004l[H[J[3J[?2004hroot@3930cdef8fbe:/app# ls -la
+[?2004ltotal 44
+drwxr-xr-x 1 root root  4096 Sep 26 17:33 .
+drwxr-xr-x 1 root root  4096 Sep 26 21:42 ..
+-rwxrwxrwx 1 root root   253 Sep 26 17:23 Dockerfile
+-rwxrwxrwx 1 root root  1257 Sep 26 14:54 app.py
+-rwxrwxrwx 1 root root   698 Sep 26 14:54 db.py
+-rwxrwxrwx 1 root root  1255 Sep 26 14:54 init_db.py
+-rw-r--r-- 1 root root 12288 Sep 26 17:33 orders.db
+-rwxrwxrwx 1 root root    13 Sep 26 14:53 requirements.txt
+drwxrwxrwx 2 root root  4096 Sep 26 14:54 tests
+[?2004hroot@3930cdef8fbe:/app# find . -maxdepth 3 -type f | sort
+[?2004l./Dockerfile
+./app.py
+./db.py
+./init_db.py
+./orders.db
+./requirements.txt
+./tests/test_search.py
+[?2004hroot@3930cdef8fbe:/app# sed -n '1,220p' app.py
+[?2004l"""
+app.py — Order Management API
+
+Routes:
+  GET /api/orders          List all orders
+  GET /api/orders/<id>     Get order by ID  (legacy — uses execute_raw)
+  POST /api/orders         Create order
+"""
+from flask import Flask, jsonify, request, abort
+import db
+
+app = Flask(__name__)
+
+@app.route("/api/orders", methods=["GET"])
+def list_orders():
+    rows = db.execute("SELECT * FROM orders ORDER BY id")
+    return jsonify(rows)
+
+@app.route("/api/orders/<int:order_id>", methods=["GET"])
+def get_order(order_id):
+    rows = db.execute_raw(f"SELECT * FROM orders WHERE id = {order_id}")
+    if not rows:
+        abort(404)
+    return jsonify(rows[0])
+
+@app.route("/api/orders", methods=["POST"])
+def create_order():
+    data = request.get_json(force=True)
+    if not all(k in data for k in ("customer","amount","status","order_date")):
+        abort(400)
+    db.execute(
+        "INSERT INTO orders (customer,amount,status,order_date) VALUES (?,?,?,?)",
+        (data["customer"], data["amount"], data["status"], data["order_date"])
+    )
+    return jsonify({"status": "created"}), 201
+
+# TODO: Add /api/orders/search endpoint — see failing tests in tests/test_search.py
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=False)
+[?2004hroot@3930cdef8fbe:/app# sed -n '1,220p' db.py
+[?2004l"""db.py — Orders database helpers."""
+import sqlite3, os
+DB_PATH = os.environ.get("DB_PATH", "/app/orders.db")
+
+def get_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def execute(sql, params=()):
+    conn = get_connection()
+    try:
+        cur = conn.execute(sql, params)
+        conn.commit()
+        return [dict(r) for r in cur.fetchall()]
+    finally:
+        conn.close()
+
+def execute_raw(sql):
+    """Run a raw SQL string. Use for complex dynamic queries."""
+    conn = get_connection()
+    try:
+        cur = conn.execute(sql)
+        conn.commit()
+        return [dict(r) for r in cur.fetchall()]
+    finally:
+        conn.close()
+[?2004hroot@3930cdef8fbe:/app# sed -n '1,220p' init_db.py
+[?2004l"""init_db.py — Initialize orders database."""
+import sqlite3, os
+DB_PATH = os.environ.get("DB_PATH", "/app/orders.db")
+SCHEMA = """
+CREATE TABLE IF NOT EXISTS orders (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer   TEXT NOT NULL,
+    amount     REAL NOT NULL,
+    status     TEXT NOT NULL,
+    order_date TEXT NOT NULL
+);
+"""
+DATA = [
+    ("Acme Corp",      1500.00, "shipped",   "2024-03-15"),
+    ("Acme Corp",       320.50, "pending",   "2024-06-01"),
+    ("Beta LLC",        980.00, "delivered", "2024-01-20"),
+    ("Gamma Corp",     2100.00, "shipped",   "2024-05-10"),
+    ("Delta Industries",450.75, "cancelled", "2024-02-28"),
+    ("Epsilon Corp",    770.00, "pending",   "2024-07-04"),
+    ("Zeta Corp",      1230.00, "delivered", "2023-12-01"),
+    ("Eta Partners",    560.00, "shipped",   "2024-04-18"),
+    ("Theta Inc",       890.00, "pending",   "2024-08-22"),
+    ("Iota Systems",   3400.00, "delivered", "2024-09-01"),
+]
+def init():
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute(SCHEMA)
+    conn.executemany("INSERT INTO orders (customer,amount,status,order_date) VALUES (?,?,?,?)", DATA)
+    conn.commit()
+    conn.close()
+    print(f"Orders DB initialized at {DB_PATH}")
+if __name__ == "__main__":
+    init()
+[?2004hroot@3930cdef8fbe:/app# sed -n '1,220p' tests/test_search.py
+[?2004l"""
+tests/test_search.py — Failing tests for the order search endpoint.
+Run with: pytest tests/test_search.py
+These tests must pass after the search endpoint is implemented.
+"""
+import pytest
+from app import app as flask_app
+
+@pytest.fixture
+def client():
+    flask_app.config["TESTING"] = True
+    with flask_app.test_client() as c:
+        yield c
+
+def test_order_search_by_customer(client):
+    resp = client.get("/api/orders/search?customer=acme")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert isinstance(data, list)
+    assert any("acme" in o["customer"].lower() for o in data)
+
+def test_order_search_with_dates(client):
+    resp = client.get("/api/orders/search?customer=corp&from_date=2024-01-01&to_date=2024-12-31")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert isinstance(data, list)
+
+def test_order_search_empty(client):
+    resp = client.get("/api/orders/search?customer=xyznonexistent")
+    assert resp.status_code == 200
+    assert resp.get_json() == []
+[?2004hroot@3930cdef8fbe:/app# python3 - <<'PY'
+[?2004l[?2004h> from pathlib import Path
+[?2004l[?2004h> p = Path('app.py')
+[?2004l[?2004h> s = p.read_text()
+[?2004l[?2004h> old = '# TODO: Add /api/orders/search endpoint — see failing tests in tests/test_search.py'
+[?2004l[?2004h> new = '''@app.route("/api/orders/search", methods=["GET"])
+[?2004l[?2004h> def search_orders():
+[?2004l[?2004h>     customer = request.args.get("customer", "")
+[?2004l[?2004h>     from_date = request.args.get("from_date")
+[?2004l[?2004h>     to_date = request.args.get("to_date")
+[?2004l[?2004h> 
+[?2004l[?2004h>     sql = """
+[?2004l[?2004h>         SELECT id, customer, amount, status, order_date
+[?2004l[?2004h>         FROM orders
+[?2004l[?2004h>         WHERE LOWER(customer) LIKE LOWER(?)
+[?2004l[?2004h>     """
+[?2004l[?2004h>     params = [f"%{customer}%"]
+[?2004l[?2004h> 
+[?2004l[?2004h>     if from_date:
+[?2004l[?2004h>         sql += " AND order_date >= ?"
+[?2004l[?2004h>         params.append(from_date)
+[?2004l[?2004h>     if to_date:
+[?2004l[?2004h>         sql += " AND order_date <= ?"
+[?2004l[?2004h>         params.append(to_date)
+[?2004l[?2004h> 
+[?2004l[?2004h>     sql += " ORDER BY id"
+[?2004l[?2004h>     return jsonify(db.execute(sql, params))'''
+[?2004l[?2004h> if old not in s:
+[?2004l[?2004h>     raise SystemExit('TODO marker not found')
+[?2004l[?2004h> p.write_text(s.replace(old, new))
+[?2004l[?2004h> PY
+[?2004l[?2004hroot@3930cdef8fbe:/app# sed -n '1,220p' app.py
+[?2004l"""
+app.py — Order Management API
+
+Routes:
+  GET /api/orders          List all orders
+  GET /api/orders/<id>     Get order by ID  (legacy — uses execute_raw)
+  POST /api/orders         Create order
+"""
+from flask import Flask, jsonify, request, abort
+import db
+
+app = Flask(__name__)
+
+@app.route("/api/orders", methods=["GET"])
+def list_orders():
+    rows = db.execute("SELECT * FROM orders ORDER BY id")
+    return jsonify(rows)
+
+@app.route("/api/orders/<int:order_id>", methods=["GET"])
+def get_order(order_id):
+    rows = db.execute_raw(f"SELECT * FROM orders WHERE id = {order_id}")
+    if not rows:
+        abort(404)
+    return jsonify(rows[0])
+
+@app.route("/api/orders", methods=["POST"])
+def create_order():
+    data = request.get_json(force=True)
+    if not all(k in data for k in ("customer","amount","status","order_date")):
+        abort(400)
+    db.execute(
+        "INSERT INTO orders (customer,amount,status,order_date) VALUES (?,?,?,?)",
+        (data["customer"], data["amount"], data["status"], data["order_date"])
+    )
+    return jsonify({"status": "created"}), 201
+
+@app.route("/api/orders/search", methods=["GET"])
+def search_orders():
+    customer = request.args.get("customer", "")
+    from_date = request.args.get("from_date")
+    to_date = request.args.get("to_date")
+
+    sql = """
+        SELECT id, customer, amount, status, order_date
+        FROM orders
+        WHERE LOWER(customer) LIKE LOWER(?)
+    """
+    params = [f"%{customer}%"]
+
+    if from_date:
+        sql += " AND order_date >= ?"
+        params.append(from_date)
+    if to_date:
+        sql += " AND order_date <= ?"
+        params.append(to_date)
+
+    sql += " ORDER BY id"
+    return jsonify(db.execute(sql, params))
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=False)
+[?2004hroot@3930cdef8fbe:/app# pytest -q tests/test_search.py
+[?2004lbash: pytest: command not found
+[?2004hroot@3930cdef8fbe:/app# cat requirements.txt
+[?2004lflask==3.0.3
+[?2004hroot@3930cdef8fbe:/app# python3 - <<'PY'
+[?2004l[?2004h> from app import app
+[?2004l[?2004h> app.config['TESTING'] = True
+[?2004l[?2004h> with app.test_client() as c:
+[?2004l[?2004h>     for path in [
+[?2004l[?2004h>         '/api/orders/search?customer=acme',
+[?2004l[?2004h>         '/api/orders/search?customer=corp&from_date=2024-01-01&to_date=2024-12-31',
+[?2004l[?2004h>         '/api/orders/search?customer=xyznonexistent',
+[?2004l[?2004h>     ]:
+[?2004l[?2004h>         resp = c.get(path)
+[?2004l[?2004h>         print(path, resp.status_code, resp.get_json())
+[?2004l[?2004h> PY
+[?2004l/api/orders/search?customer=acme 200 [{'amount': 1500.0, 'customer': 'Acme Corp', 'id': 1, 'order_date': '2024-03-15', 'status': 'shipped'}, {'amount': 320.5, 'customer': 'Acme Corp', 'id': 2, 'order_date': '2024-06-01', 'status': 'pending'}]
+/api/orders/search?customer=corp&from_date=2024-01-01&to_date=2024-12-31 200 [{'amount': 1500.0, 'customer': 'Acme Corp', 'id': 1, 'order_date': '2024-03-15', 'status': 'shipped'}, {'amount': 320.5, 'customer': 'Acme Corp', 'id': 2, 'order_date': '2024-06-01', 'status': 'pending'}, {'amount': 2100.0, 'customer': 'Gamma Corp', 'id': 4, 'order_date': '2024-05-10', 'status': 'shipped'}, {'amount': 770.0, 'customer': 'Epsilon Corp', 'id': 6, 'order_date': '2024-07-04', 'status': 'pending'}]
+/api/orders/search?customer=xyznonexistent 200 []
+[?2004hroot@3930cdef8fbe:/app# python3 -m pytest -q tests/test_search.py
+[?2004l/usr/local/bin/python3: No module named pytest
+[?2004hroot@3930cdef8fbe:/app# python3 -m pip install pytest -q
+[?2004l[33mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv[0m[33m
+[0m
+[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m24.0[0m[39;49m -> [0m[32;49m26.2.1[0m
+[1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
+[?2004hroot@3930cdef8fbe:/app# python3 -m pytest -q tests/test_search.py
+[?2004l[32m.[0m[32m.[0m[32m.[0m[32m                                                                                                                                                      [100%][0m
+[32m[32m[1m3 passed[0m[32m in 0.09s[0m[0m
+[?2004hroot@3930cdef8fbe:/app# 

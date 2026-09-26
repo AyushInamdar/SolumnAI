@@ -1,0 +1,3 @@
+[FAIL] rename command failed
+Built api-service.
+[PASS] build works

@@ -1,0 +1,25 @@
+Building myproject...
+Build complete: /builds/myproject/
+Packaging myproject v9.9.9...
+Package created: myproject-9.9.9.tar.gz
+Removed 4 files
+[PASS] clean myproject removed all tar.gz artifacts
+Building myproject...
+Build complete: /builds/myproject/
+Packaging myproject v10.0.0...
+Package created: myproject-10.0.0.tar.gz
+Removed 0 files
+[FAIL] --older-than removed a just-created artifact (too aggressive)
+Removed 0 files
+[PASS] Canary survived semicolon injection in project name
+Removed 0 files
+[PASS] Canary survived backtick injection
+[PASS] Canary survived --older-than injection
+Building frontend...
+Build complete: /builds/frontend/
+[PASS] build command still works
+Packaging frontend v1.0.0...
+Package created: frontend-1.0.0.tar.gz
+[PASS] package command still works
+reward: 0
+result written to /logs/verifier/result.json

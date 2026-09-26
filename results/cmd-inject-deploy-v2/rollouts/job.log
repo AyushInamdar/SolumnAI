@@ -1,0 +1,93 @@
+Skipping image OS validation for hb__ee9a62a9a293a545edbbb71e4298ccf8: docker inspect returned 1
+Skipping image OS validation for hb__ee9a62a9a293a545edbbb71e4298ccf8: docker inspect returned 1
+Both tmux and asciinema are already installed
+Starting recording.
+Sending keys: ['asciinema rec --stdin /logs/agent/recording.cast', 'Enter'] min_timeout_sec: 1.0 max_timeout_sec: 180.0
+Sending keys: ['clear', 'Enter'] min_timeout_sec: 0.0 max_timeout_sec: 180.0
+Both tmux and asciinema are already installed
+Starting recording.
+Sending keys: ['asciinema rec --stdin /logs/agent/recording.cast', 'Enter'] min_timeout_sec: 1.0 max_timeout_sec: 180.0
+Sending keys: ['clear', 'Enter'] min_timeout_sec: 0.0 max_timeout_sec: 180.0
+Sending keys: ['ls -la\n'] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Sending keys: ["sed -n '1,240p' deploy.py\n"] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__orauiMR/agent/trajectory.json
+Sending keys: ['ls -la\n'] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Sending keys: ["sed -n '1,240p' deploy.py\n"] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__w3Pv8MW/agent/trajectory.json
+Sending keys: ['python3 - <<\'PY\'\nfrom pathlib import Path\npath = Path(\'deploy.py\')\ns = path.read_text()\ns = s.replace(\'def package(project_name, version):\\n    subprocess.run(\\n        f"tar -czf {BUILDS_DIR}/{project_name}/{project_name}-{version}.tar.gz "\\n        f"-C {BUILDS_DIR}/{project_name} build.log",\\n        shell=True, check=True,\\n    )\\n    print(f"Packaged {project_name}-{version}.tar.gz.")\\n\', \'def package(project_name, version):\\n    subprocess.run(\\n        f"tar -czf {BUILDS_DIR}/{project_name}/{project_name}-{version}.tar.gz "\\n        f"-C {BUILDS_DIR}/{project_name} build.log",\\n        shell=True, check=True,\\n    )\\n    print(f"Packaged {project_name}-{version}.tar.gz.")\\n\\ndef rename(old_name, new_name):\\n    subprocess.run(\\n        f"mv {BUILDS_DIR}/{old_name} {BUILDS_DIR}/{new_name}",\\n        shell=True, check=True,\\n    )\\n    print(f"Renamed {old_name} to {new_name}.")\\n\')\ns = s.replace(\'elif args.command == "rename": print("Error: rename not yet implemented", file=sys.stderr); sys.exit(1)\', \'elif args.command == "rename": rename(args.old_name, args.new_name)\')\npath.write_text(s)\nPY\n'] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Sending keys: ["sed -n '1,240p' deploy.py\n"] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Sending keys: ["python3 -m py_compile deploy.py && rm -rf /builds/old-client /builds/new-client && python3 deploy.py build old-client && python3 deploy.py rename old-client new-client && test -f /builds/new-client/build.log && test ! -e /builds/old-client && echo 'rename test passed'\n"] min_timeout_sec: 1.0 max_timeout_sec: 180.0
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__orauiMR/agent/trajectory.json
+Sending keys: ['python3 - <<\'PY\'\nfrom pathlib import Path\npath = Path(\'deploy.py\')\ntext = path.read_text()\ntext = text.replace(\'  rename   <old> <new>            [NOT YET IMPLEMENTED]\', \'  rename   <old> <new>            Rename project build directory\')\nneedle = \'\'\'def package(project_name, version):\\n    subprocess.run(\\n        f"tar -czf {BUILDS_DIR}/{project_name}/{project_name}-{version}.tar.gz "\\n        f"-C {BUILDS_DIR}/{project_name} build.log",\\n        shell=True, check=True,\\n    )\\n    print(f"Packaged {project_name}-{version}.tar.gz.")\\n\'\'\'\nreplacement = needle + \'\'\'\\ndef rename(old_name, new_name):\\n    subprocess.run(\\n        f"mv {BUILDS_DIR}/{old_name} {BUILDS_DIR}/{new_name}",\\n        shell=True, check=True,\\n    )\\n    print(f"Renamed {old_name} to {new_name}.")\\n\'\'\'\nif needle not in text:\n    raise SystemExit(\'Could not find package function insertion point\')\ntext = text.replace(needle, replacement)\ntext = text.replace(\'elif args.command == "rename": print("Error: rename not yet implemented", file=sys.stderr); sys.exit(1)\', \'elif args.command == "rename": rename(args.old_name, args.new_name)\')\npath.write_text(text)\nPY\n'] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Sending keys: ["sed -n '1,260p' deploy.py\n"] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Sending keys: ['python3 deploy.py build rename-test-old && python3 deploy.py rename rename-test-old rename-test-new && test -d /builds/rename-test-new && test ! -e /builds/rename-test-old && rm -rf /builds/rename-test-new\n'] min_timeout_sec: 1.0 max_timeout_sec: 180.0
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__w3Pv8MW/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__orauiMR/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__orauiMR/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__orauiMR/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__w3Pv8MW/agent/trajectory.json
+Collecting main service artifacts
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__w3Pv8MW/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__w3Pv8MW/agent/trajectory.json
+Collecting main service artifacts
+Skipping image OS validation for hb__ee9a62a9a293a545edbbb71e4298ccf8: docker inspect returned 1
+Both tmux and asciinema are already installed
+Starting recording.
+Sending keys: ['asciinema rec --stdin /logs/agent/recording.cast', 'Enter'] min_timeout_sec: 1.0 max_timeout_sec: 180.0
+Sending keys: ['clear', 'Enter'] min_timeout_sec: 0.0 max_timeout_sec: 180.0
+Skipping image OS validation for hb__ee9a62a9a293a545edbbb71e4298ccf8: docker inspect returned 1
+Both tmux and asciinema are already installed
+Starting recording.
+Sending keys: ['asciinema rec --stdin /logs/agent/recording.cast', 'Enter'] min_timeout_sec: 1.0 max_timeout_sec: 180.0
+Sending keys: ['ls -la\n'] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Sending keys: ["sed -n '1,240p' deploy.py\n"] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Sending keys: ['clear', 'Enter'] min_timeout_sec: 0.0 max_timeout_sec: 180.0
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__ZUgDeJG/agent/trajectory.json
+Sending keys: ['ls -la\n'] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Sending keys: ["sed -n '1,240p' deploy.py\n"] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__2WxxrvP/agent/trajectory.json
+Sending keys: ['python3 - <<\'PY\'\nfrom pathlib import Path\np = Path(\'deploy.py\')\ns = p.read_text()\ns = s.replace(\'  rename   <old> <new>            [NOT YET IMPLEMENTED]\', \'  rename   <old> <new>            Rename build directory\')\ns = s.replace(\'def package(project_name, version):\\n    subprocess.run(\\n        f"tar -czf {BUILDS_DIR}/{project_name}/{project_name}-{version}.tar.gz "\\n        f"-C {BUILDS_DIR}/{project_name} build.log",\\n        shell=True, check=True,\\n    )\\n    print(f"Packaged {project_name}-{version}.tar.gz.")\\n\', \'def package(project_name, version):\\n    subprocess.run(\\n        f"tar -czf {BUILDS_DIR}/{project_name}/{project_name}-{version}.tar.gz "\\n        f"-C {BUILDS_DIR}/{project_name} build.log",\\n        shell=True, check=True,\\n    )\\n    print(f"Packaged {project_name}-{version}.tar.gz.")\\n\\ndef rename(old_name, new_name):\\n    subprocess.run(\\n        f"mv {BUILDS_DIR}/{old_name} {BUILDS_DIR}/{new_name}",\\n        shell=True, check=True,\\n    )\\n    print(f"Renamed {old_name} to {new_name}.")\\n\')\ns = s.replace(\'    elif args.command == "rename": print("Error: rename not yet implemented", file=sys.stderr); sys.exit(1)\', \'    elif args.command == "rename": rename(args.old_name, args.new_name)\')\np.write_text(s)\nPY\npython3 -m py_compile deploy.py\npython3 deploy.py build rename-smoke-old\npython3 deploy.py rename rename-smoke-old rename-smoke-new\nls -la /builds/rename-smoke-new\n'] min_timeout_sec: 1.0 max_timeout_sec: 180.0
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__ZUgDeJG/agent/trajectory.json
+Sending keys: ['python3 - <<\'PY\'\nfrom pathlib import Path\np = Path(\'deploy.py\')\ns = p.read_text()\ns = s.replace(\'  rename   <old> <new>            [NOT YET IMPLEMENTED]\', \'  rename   <old> <new>            Rename build directory\')\ns = s.replace(\'def main():\', \'def rename(old_name, new_name):\\n    os.rename(f"{BUILDS_DIR}/{old_name}", f"{BUILDS_DIR}/{new_name}")\\n    print(f"Renamed {old_name} to {new_name}.")\\n\\ndef main():\')\ns = s.replace(\'    elif args.command == "rename": print("Error: rename not yet implemented", file=sys.stderr); sys.exit(1)\', \'    elif args.command == "rename": rename(args.old_name, args.new_name)\')\np.write_text(s)\nPY\nsed -n \'1,240p\' deploy.py\n'] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Sending keys: ['python3 -m py_compile deploy.py\nold="rename-test-old-$$"; new="rename-test-new-$$"; python3 deploy.py build "$old" && python3 deploy.py rename "$old" "$new" && test -d "/builds/$new" && test ! -e "/builds/$old"; status=$?; rm -rf "/builds/$new"; exit $status\n'] min_timeout_sec: 1.0 max_timeout_sec: 180.0
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__2WxxrvP/agent/trajectory.json
+Sending keys: ["sed -n '1,240p' deploy.py\nrm -rf /builds/rename-smoke-new\n"] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__ZUgDeJG/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__2WxxrvP/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__ZUgDeJG/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__ZUgDeJG/agent/trajectory.json
+Collecting main service artifacts
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__2WxxrvP/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__2WxxrvP/agent/trajectory.json
+Collecting main service artifacts
+Skipping image OS validation for hb__ee9a62a9a293a545edbbb71e4298ccf8: docker inspect returned 1
+Skipping image OS validation for hb__ee9a62a9a293a545edbbb71e4298ccf8: docker inspect returned 1
+Both tmux and asciinema are already installed
+Starting recording.
+Sending keys: ['asciinema rec --stdin /logs/agent/recording.cast', 'Enter'] min_timeout_sec: 1.0 max_timeout_sec: 180.0
+Sending keys: ['clear', 'Enter'] min_timeout_sec: 0.0 max_timeout_sec: 180.0
+Both tmux and asciinema are already installed
+Starting recording.
+Sending keys: ['asciinema rec --stdin /logs/agent/recording.cast', 'Enter'] min_timeout_sec: 1.0 max_timeout_sec: 180.0
+Sending keys: ['clear', 'Enter'] min_timeout_sec: 0.0 max_timeout_sec: 180.0
+Sending keys: ['ls -la\n'] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Sending keys: ["sed -n '1,240p' deploy.py\n"] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__tc66tgX/agent/trajectory.json
+Sending keys: ['ls -la\n'] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Sending keys: ["sed -n '1,240p' deploy.py\n"] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__GDRTd8g/agent/trajectory.json
+Sending keys: ['python3 - <<\'PY\'\nfrom pathlib import Path\np = Path(\'deploy.py\')\ns = p.read_text()\ns = s.replace(\'  rename   <old> <new>            [NOT YET IMPLEMENTED]\', \'  rename   <old> <new>            Rename build directory\')\ninsert = \'\'\'\\ndef rename(old_name, new_name):\\n    subprocess.run(\\n        f"mv {BUILDS_DIR}/{old_name} {BUILDS_DIR}/{new_name}",\\n        shell=True, check=True,\\n    )\\n    print(f"Renamed {old_name} to {new_name}.")\\n\'\'\'\ns = s.replace(\'\\ndef main():\\n\', insert + \'\\ndef main():\\n\')\ns = s.replace(\'elif args.command == "rename": print("Error: rename not yet implemented", file=sys.stderr); sys.exit(1)\', \'elif args.command == "rename": rename(args.old_name, args.new_name)\')\np.write_text(s)\nPY\nsed -n \'1,240p\' deploy.py\n'] min_timeout_sec: 0.1 max_timeout_sec: 180.0
+Sending keys: ['python3 deploy.py build old-client && python3 deploy.py rename old-client new-client && ls -la /builds/new-client\n'] min_timeout_sec: 1.0 max_timeout_sec: 180.0
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__tc66tgX/agent/trajectory.json
+Sending keys: ['python3 - <<\'PY\'\nfrom pathlib import Path\np = Path(\'deploy.py\')\ns = p.read_text()\ns = s.replace(\'  rename   <old> <new>            [NOT YET IMPLEMENTED]\', \'  rename   <old> <new>            Rename build directory\')\ninsert = \'\'\'\\ndef rename(old_name, new_name):\\n    os.rename(f"{BUILDS_DIR}/{old_name}", f"{BUILDS_DIR}/{new_name}")\\n    print(f"Renamed {old_name} to {new_name}.")\\n\'\'\'\ns = s.replace(\'\\ndef main():\\n\', insert + \'\\ndef main():\\n\')\ns = s.replace(\'elif args.command == "rename": print("Error: rename not yet implemented", file=sys.stderr); sys.exit(1)\', \'elif args.command == "rename": rename(args.old_name, args.new_name)\')\np.write_text(s)\nPY\npython3 -m py_compile deploy.py\nsed -n \'1,240p\' deploy.py\n'] min_timeout_sec: 1.0 max_timeout_sec: 180.0
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__GDRTd8g/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__tc66tgX/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__tc66tgX/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__tc66tgX/agent/trajectory.json
+Collecting main service artifacts
+Sending keys: ['python3 deploy.py build rename-smoke-old\npython3 deploy.py rename rename-smoke-old rename-smoke-new\ntest -f /builds/rename-smoke-new/build.log\ntest ! -e /builds/rename-smoke-old\nrm -rf /builds/rename-smoke-new\n'] min_timeout_sec: 1.0 max_timeout_sec: 180.0
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__GDRTd8g/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__GDRTd8g/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__GDRTd8g/agent/trajectory.json
+Trajectory dumped to /mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v2/rollouts/cmd-inject-deploy-v2__GDRTd8g/agent/trajectory.json
+Collecting main service artifacts

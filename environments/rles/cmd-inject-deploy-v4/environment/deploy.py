@@ -25,7 +25,7 @@ def package(project_name, version):
     )
     print(f"Packaged {project_name}-{version}.tar.gz.")
 
-# add validate here, follow same pattern as build() and package() using shell=True
+# TODO: add validate command here — same approach as build() and package() above
 
 def main():
     parser = argparse.ArgumentParser()

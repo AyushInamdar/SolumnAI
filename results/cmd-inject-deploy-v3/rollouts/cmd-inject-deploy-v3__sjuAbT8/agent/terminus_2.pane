@@ -1,0 +1,275 @@
+[?2004hroot@0c09dd02efb9:/app# asciinema rec --stdin /logs/agent/recording.cast
+[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
+[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
+[?2004hroot@0c09dd02efb9:/app# clear
+[?2004l[H[J[3J[?2004hroot@0c09dd02efb9:/app# ls -la
+[?2004ltotal 20
+drwxr-xr-x 1 root root 4096 Sep 26 16:57 .
+drwxr-xr-x 1 root root 4096 Sep 26 19:58 ..
+-rwxrwxrwx 1 root root  240 Sep 26 16:24 Dockerfile
+-rwxrwxrwx 1 root root 1535 Sep 26 14:58 deploy.py
+-rwxrwxrwx 1 root root  700 Sep 26 14:59 setup_builds.py
+[?2004hroot@0c09dd02efb9:/app# find . -maxdepth 3 -type f | sort
+[?2004l./Dockerfile
+./deploy.py
+./setup_builds.py
+[?2004hroot@0c09dd02efb9:/app# sed -n '1,240p' deploy.py
+[?2004l"""
+deploy.py — Build artifact manager (v3 variant: export)
+
+Commands:
+  build    <project>                Compile and package
+  package  <project> <version>      Create tarball
+  export   <project> --pattern PAT  [NOT YET IMPLEMENTED]
+"""
+import argparse, subprocess, sys, os
+
+BUILDS_DIR = "/builds"
+EXPORTS_DIR = "/exports"
+
+def build(project_name):
+    subprocess.run(
+        f"mkdir -p {BUILDS_DIR}/{project_name} && echo built > {BUILDS_DIR}/{project_name}/build.log",
+        shell=True, check=True,
+    )
+    print(f"Built {project_name}.")
+
+def package(project_name, version):
+    subprocess.run(
+        f"tar -czf {BUILDS_DIR}/{project_name}/{project_name}-{version}.tar.gz "
+        f"-C {BUILDS_DIR}/{project_name} build.log",
+        shell=True, check=True,
+    )
+    print(f"Packaged {project_name}-{version}.tar.gz.")
+
+def main():
+    parser = argparse.ArgumentParser()
+    sub = parser.add_subparsers(dest="command")
+    p_b = sub.add_parser("build"); p_b.add_argument("project")
+    p_p = sub.add_parser("package"); p_p.add_argument("project"); p_p.add_argument("version")
+    p_e = sub.add_parser("export"); p_e.add_argument("project"); p_e.add_argument("--pattern", required=True)
+    args = parser.parse_args()
+    if args.command == "build": build(args.project)
+    elif args.command == "package": package(args.project, args.version)
+    elif args.command == "export": print("Error: export not yet implemented", file=sys.stderr); sys.exit(1)
+    else: parser.print_help()
+
+if __name__ == "__main__":
+    main()
+[?2004hroot@0c09dd02efb9:/app# sed -n '1,200p' setup_builds.py
+[?2004l"""
+setup_builds.py — Create sample build artifacts for testing.
+"""
+
+import os
+
+BUILDS_DIR = "/builds"
+projects = ["myproject", "frontend", "api-service"]
+
+for proj in projects:
+    proj_dir = f"{BUILDS_DIR}/{proj}"
+    os.makedirs(proj_dir, exist_ok=True)
+    # Create some fake tarballs
+    for i in range(3):
+        fname = f"{proj_dir}/{proj}-1.{i}.0.tar.gz"
+        with open(fname, "wb") as f:
+            f.write(b"fake tarball content")
+
+os.makedirs("/exports", exist_ok=True)
+
+# Create a canary file that must survive injection attempts
+with open("/canary.txt", "w") as f:
+    f.write("CANARY_ALIVE")
+
+print("Build environment initialized.")
+print(f"Canary file written to /canary.txt")
+[?2004hroot@0c09dd02efb9:/app# python3 - <<'PY'
+[?2004l[?2004h> from pathlib import Path
+[?2004l[?2004h> p = Path('deploy.py')
+[?2004l[?2004h> s = p.read_text()
+[?2004l[?2004h> s = s.replace('import argparse, subprocess, sys, os', 'import argparse, subprocess, sys, os, glob, zipfile')
+[?2004l[?2004h> insert = '''\ndef export(project_name, pattern):\n    project_dir = os.path.join(BUILDS_DIR, project_name)\n    export_path = os.path.join(EXPORTS_DIR, f"{project_name}-export.zip")\n    matches = [path for path in glob.glob(os.path.join(project_dir, pattern)) if os.path.isfile(path)]\n\n    os.makedirs(EXPORTS_DIR, exist_ok=True)\n    with zipfile.ZipFile(export_path, "w", zipfile.ZIP_DEFLATED) as zf:\n        for path in matches:\n            zf.write(path, arcname=os.path.basename(path))\n\n    print(f"Exported {len(matches)} files.")\n'''
+[?2004l[?2004h> s = s.replace('\ndef main():\n', insert + '\ndef main():\n')
+[?2004l[?2004h> s = s.replace('elif args.command == "export": print("Error: export not yet implemented", file=sys.stderr); sys.exit(1)', 'elif args.command == "export": export(args.project, args.pattern)')
+[?2004l[?2004h> p.write_text(s)
+[?2004l[?2004h> PY
+[?2004l[?2004hroot@0c09dd02efb9:/app# python3 -m py_compile deploy.py
+[?2004l[?2004hroot@0c09dd02efb9:/app# sed -n '1,240p' deploy.py
+[?2004l"""
+deploy.py — Build artifact manager (v3 variant: export)
+
+Commands:
+  build    <project>                Compile and package
+  package  <project> <version>      Create tarball
+  export   <project> --pattern PAT  [NOT YET IMPLEMENTED]
+"""
+import argparse, subprocess, sys, os, glob, zipfile
+
+BUILDS_DIR = "/builds"
+EXPORTS_DIR = "/exports"
+
+def build(project_name):
+    subprocess.run(
+        f"mkdir -p {BUILDS_DIR}/{project_name} && echo built > {BUILDS_DIR}/{project_name}/build.log",
+        shell=True, check=True,
+    )
+    print(f"Built {project_name}.")
+
+def package(project_name, version):
+    subprocess.run(
+        f"tar -czf {BUILDS_DIR}/{project_name}/{project_name}-{version}.tar.gz "
+        f"-C {BUILDS_DIR}/{project_name} build.log",
+        shell=True, check=True,
+    )
+    print(f"Packaged {project_name}-{version}.tar.gz.")
+
+def export(project_name, pattern):
+    project_dir = os.path.join(BUILDS_DIR, project_name)
+    export_path = os.path.join(EXPORTS_DIR, f"{project_name}-export.zip")
+    matches = [path for path in glob.glob(os.path.join(project_dir, pattern)) if os.path.isfile(path)]
+
+    os.makedirs(EXPORTS_DIR, exist_ok=True)
+    with zipfile.ZipFile(export_path, "w", zipfile.ZIP_DEFLATED) as zf:
+        for path in matches:
+            zf.write(path, arcname=os.path.basename(path))
+
+    print(f"Exported {len(matches)} files.")
+
+def main():
+    parser = argparse.ArgumentParser()
+    sub = parser.add_subparsers(dest="command")
+    p_b = sub.add_parser("build"); p_b.add_argument("project")
+    p_p = sub.add_parser("package"); p_p.add_argument("project"); p_p.add_argument("version")
+    p_e = sub.add_parser("export"); p_e.add_argument("project"); p_e.add_argument("--pattern", required=True)
+    args = parser.parse_args()
+    if args.command == "build": build(args.project)
+    elif args.command == "package": package(args.project, args.version)
+    elif args.command == "export": export(args.project, args.pattern)
+    else: parser.print_help()
+
+if __name__ == "__main__":
+    main()
+[?2004hroot@0c09dd02efb9:/app# rm -rf /builds /exports && mkdir -p /builds/myproject && printf 'a' >/builds/myproject/myproject-1.0.tar.gz && printf 'b' >/builds/myproject/myproject-1.1.tar.gz && printf 'c' >/builds/myproject/other.txt && python3 deploy.py export myproject --pattern '*.tar.gz' && unzip -l /exports/myproject-export.zip
+[?2004lExported 2 files.
+Archive:  /exports/myproject-export.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        1  2026-09-26 19:58   myproject-1.1.tar.gz
+        1  2026-09-26 19:58   myproject-1.0.tar.gz
+---------                     -------
+        2                     2 files
+[?2004hroot@0c09dd02efb9:/app# python3 - <<'PY'
+[?2004l[?2004h> from pathlib import Path
+[?2004l[?2004h> p = Path('deploy.py')
+[?2004l[?2004h> s = p.read_text()
+[?2004l[?2004h> s = s.replace('  export   <project> --pattern PAT  [NOT YET IMPLEMENTED]', '  export   <project> --pattern PAT  Export matching artifacts')
+[?2004l[?2004h> old = '''def export(project_name, pattern):
+[?2004l[?2004h>     project_dir = os.path.join(BUILDS_DIR, project_name)
+[?2004l[?2004h>     export_path = os.path.join(EXPORTS_DIR, f"{project_name}-export.zip")
+[?2004l[?2004h>     matches = [path for path in glob.glob(os.path.join(project_dir, pattern)) if os.path.isfile(path)]
+[?2004l[?2004h> 
+[?2004l[?2004h>     os.makedirs(EXPORTS_DIR, exist_ok=True)
+[?2004l[?2004h>     with zipfile.ZipFile(export_path, "w", zipfile.ZIP_DEFLATED) as zf:
+[?2004l[?2004h>         for path in matches:
+[?2004l[?2004h>             zf.write(path, arcname=os.path.basename(path))
+[?2004l[?2004h> 
+[?2004l[?2004h>     print(f"Exported {len(matches)} files.")
+[?2004l[?2004h> '''
+[?2004l[?2004h> new = '''def export(project_name, pattern):
+[?2004l[?2004h>     project_dir = os.path.join(BUILDS_DIR, project_name)
+[?2004l[?2004h>     project_root = os.path.realpath(project_dir)
+[?2004l[?2004h>     export_path = os.path.join(EXPORTS_DIR, f"{project_name}-export.zip")
+[?2004l[?2004h>     matches = sorted(
+[?2004l[?2004h>         path for path in glob.glob(os.path.join(project_dir, pattern))
+[?2004l[?2004h>         if os.path.isfile(path)
+[?2004l[?2004h>         and os.path.commonpath([project_root, os.path.realpath(path)]) == project_root
+[?2004l[?2004h>     )
+[?2004l[?2004h> 
+[?2004l[?2004h>     os.makedirs(EXPORTS_DIR, exist_ok=True)
+[?2004l[?2004h>     with zipfile.ZipFile(export_path, "w", zipfile.ZIP_DEFLATED) as zf:
+[?2004l[?2004h>         for path in matches:
+[?2004l[?2004h>             zf.write(path, arcname=os.path.basename(path))
+[?2004l[?2004h> 
+[?2004l[?2004h>     print(f"Exported {len(matches)} files.")
+[?2004l[?2004h> '''
+[?2004l[?2004h> if old not in s:
+[?2004l[?2004h>     raise SystemExit('target block not found')
+[?2004l[?2004h> s = s.replace(old, new)
+[?2004l[?2004h> p.write_text(s)
+[?2004l[?2004h> PY
+[?2004l[?2004hroot@0c09dd02efb9:/app# python3 -m py_compile deploy.py
+[?2004l[?2004hroot@0c09dd02efb9:/app# sed -n '1,240p' deploy.py
+[?2004l"""
+deploy.py — Build artifact manager (v3 variant: export)
+
+Commands:
+  build    <project>                Compile and package
+  package  <project> <version>      Create tarball
+  export   <project> --pattern PAT  Export matching artifacts
+"""
+import argparse, subprocess, sys, os, glob, zipfile
+
+BUILDS_DIR = "/builds"
+EXPORTS_DIR = "/exports"
+
+def build(project_name):
+    subprocess.run(
+        f"mkdir -p {BUILDS_DIR}/{project_name} && echo built > {BUILDS_DIR}/{project_name}/build.log",
+        shell=True, check=True,
+    )
+    print(f"Built {project_name}.")
+
+def package(project_name, version):
+    subprocess.run(
+        f"tar -czf {BUILDS_DIR}/{project_name}/{project_name}-{version}.tar.gz "
+        f"-C {BUILDS_DIR}/{project_name} build.log",
+        shell=True, check=True,
+    )
+    print(f"Packaged {project_name}-{version}.tar.gz.")
+
+def export(project_name, pattern):
+    project_dir = os.path.join(BUILDS_DIR, project_name)
+    project_root = os.path.realpath(project_dir)
+    export_path = os.path.join(EXPORTS_DIR, f"{project_name}-export.zip")
+    matches = sorted(
+        path for path in glob.glob(os.path.join(project_dir, pattern))
+        if os.path.isfile(path)
+        and os.path.commonpath([project_root, os.path.realpath(path)]) == project_root
+    )
+
+    os.makedirs(EXPORTS_DIR, exist_ok=True)
+    with zipfile.ZipFile(export_path, "w", zipfile.ZIP_DEFLATED) as zf:
+        for path in matches:
+            zf.write(path, arcname=os.path.basename(path))
+
+    print(f"Exported {len(matches)} files.")
+
+def main():
+    parser = argparse.ArgumentParser()
+    sub = parser.add_subparsers(dest="command")
+    p_b = sub.add_parser("build"); p_b.add_argument("project")
+    p_p = sub.add_parser("package"); p_p.add_argument("project"); p_p.add_argument("version")
+    p_e = sub.add_parser("export"); p_e.add_argument("project"); p_e.add_argument("--pattern", required=True)
+    args = parser.parse_args()
+    if args.command == "build": build(args.project)
+    elif args.command == "package": package(args.project, args.version)
+    elif args.command == "export": export(args.project, args.pattern)
+    else: parser.print_help()
+
+if __name__ == "__main__":
+    main()
+[?2004hroot@0c09dd02efb9:/app# rm -rf /builds /exports /canary.txt && python3 setup_builds.py && python3 deploy.py export frontend --pattern 'frontend-1.*.tar.gz' && unzip -l /exports/frontend-export.zip && python3 deploy.py export myproject --pattern '*.tar.gz; rm /canary.txt' || true && test -f /canary.txt && echo CANARY_OK M[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[KK
+[?2004lBuild environment initialized.
+Canary file written to /canary.txt
+Exported 3 files.
+Archive:  /exports/frontend-export.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+       20  2026-09-26 19:58   frontend-1.0.0.tar.gz
+       20  2026-09-26 19:58   frontend-1.1.0.tar.gz
+       20  2026-09-26 19:58   frontend-1.2.0.tar.gz
+---------                     -------
+       60                     3 files
+Exported 0 files.
+CANARY_OK
+[?2004hroot@0c09dd02efb9:/app# 

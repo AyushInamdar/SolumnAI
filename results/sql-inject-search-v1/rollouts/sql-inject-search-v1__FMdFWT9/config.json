@@ -1,0 +1,13 @@
+{
+    "task": {
+        "path": "/mnt/c/SolumnAI/environments/rles/sql-inject-search-v1",
+        "source": "rles"
+    },
+    "trial_name": "sql-inject-search-v1__FMdFWT9",
+    "trials_dir": "/mnt/c/SolumnAI/jobs_final_7/sql-inject-search-v1/rollouts",
+    "agent": {
+        "name": "terminus-2",
+        "model_name": "openai/gpt-5.5"
+    },
+    "job_id": "74de1daf-b6ba-4703-adc2-b88869dd2e7e"
+}

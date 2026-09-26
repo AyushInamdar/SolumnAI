@@ -1,0 +1,13 @@
+{
+    "task": {
+        "path": "/mnt/c/SolumnAI/environments/rles/cmd-inject-deploy-v3",
+        "source": "rles"
+    },
+    "trial_name": "cmd-inject-deploy-v3__2ReeiiL",
+    "trials_dir": "/mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v3/rollouts",
+    "agent": {
+        "name": "terminus-2",
+        "model_name": "openai/gpt-5.5"
+    },
+    "job_id": "c957f4db-fdb1-4af2-9d83-8147515e503f"
+}
