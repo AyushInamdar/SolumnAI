@@ -1,6 +1,6 @@
 {
     "job_name": "rollouts",
-    "jobs_dir": "/mnt/c/SolumnAI/jobs_final_6/cmd-inject-deploy-v3",
+    "jobs_dir": "/mnt/c/SolumnAI/jobs_final_8/cmd-inject-deploy-v3",
     "n_attempts": 6,
     "n_concurrent_trials": 2,
     "agents": [

@@ -1,6 +1,0 @@
-[FAIL] rename command failed
-[FAIL] COMMAND INJECTION — canary deleted via old_name
-Renamed frontend to frontend2; rm /canary.txt.
-[FAIL] COMMAND INJECTION — canary deleted via new_name
-Built api-service.
-[PASS] build works

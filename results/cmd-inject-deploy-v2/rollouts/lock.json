@@ -1,6 +1,6 @@
 {
     "schema_version": 3,
-    "created_at": "2026-09-26T19:53:16.716011Z",
+    "created_at": "2026-09-26T22:35:46.196611Z",
     "harbor": {
         "version": "0.23.0",
         "is_editable": false
@@ -9,15 +9,15 @@
     "retry": {
         "max_retries": 0,
         "exclude_exceptions": [
+            "VerifierOutputParseError",
+            "ModelNotFoundError",
+            "ApiUsageLimitError",
+            "RewardFileNotFoundError",
             "AgentSafetyRefusalError",
             "RewardFileEmptyError",
+            "VerifierTimeoutError",
             "AgentTimeoutError",
-            "AgentAuthenticationError",
-            "RewardFileNotFoundError",
-            "ModelNotFoundError",
-            "VerifierOutputParseError",
-            "ApiUsageLimitError",
-            "VerifierTimeoutError"
+            "AgentAuthenticationError"
         ],
         "wait_multiplier": 1.0,
         "min_wait_sec": 1.0,
@@ -29,7 +29,7 @@
             "task": {
                 "name": "cmd-inject-deploy-v2",
                 "type": "local",
-                "digest": "sha256:ee56258e9087bba393f6c5ebf8b9101c65ea37e236ba8f900edc71129b6d8a12",
+                "digest": "sha256:5fed20aeff144e616ab97c9de7523e50295e053f0b7bffbe65f9b9c7e0a66209",
                 "source": "rles",
                 "path": "/mnt/c/SolumnAI/environments/rles/cmd-inject-deploy-v2"
             },
@@ -66,7 +66,7 @@
             "task": {
                 "name": "cmd-inject-deploy-v2",
                 "type": "local",
-                "digest": "sha256:ee56258e9087bba393f6c5ebf8b9101c65ea37e236ba8f900edc71129b6d8a12",
+                "digest": "sha256:5fed20aeff144e616ab97c9de7523e50295e053f0b7bffbe65f9b9c7e0a66209",
                 "source": "rles",
                 "path": "/mnt/c/SolumnAI/environments/rles/cmd-inject-deploy-v2"
             },
@@ -103,7 +103,7 @@
             "task": {
                 "name": "cmd-inject-deploy-v2",
                 "type": "local",
-                "digest": "sha256:ee56258e9087bba393f6c5ebf8b9101c65ea37e236ba8f900edc71129b6d8a12",
+                "digest": "sha256:5fed20aeff144e616ab97c9de7523e50295e053f0b7bffbe65f9b9c7e0a66209",
                 "source": "rles",
                 "path": "/mnt/c/SolumnAI/environments/rles/cmd-inject-deploy-v2"
             },
@@ -140,7 +140,7 @@
             "task": {
                 "name": "cmd-inject-deploy-v2",
                 "type": "local",
-                "digest": "sha256:ee56258e9087bba393f6c5ebf8b9101c65ea37e236ba8f900edc71129b6d8a12",
+                "digest": "sha256:5fed20aeff144e616ab97c9de7523e50295e053f0b7bffbe65f9b9c7e0a66209",
                 "source": "rles",
                 "path": "/mnt/c/SolumnAI/environments/rles/cmd-inject-deploy-v2"
             },
@@ -177,7 +177,7 @@
             "task": {
                 "name": "cmd-inject-deploy-v2",
                 "type": "local",
-                "digest": "sha256:ee56258e9087bba393f6c5ebf8b9101c65ea37e236ba8f900edc71129b6d8a12",
+                "digest": "sha256:5fed20aeff144e616ab97c9de7523e50295e053f0b7bffbe65f9b9c7e0a66209",
                 "source": "rles",
                 "path": "/mnt/c/SolumnAI/environments/rles/cmd-inject-deploy-v2"
             },
@@ -214,7 +214,7 @@
             "task": {
                 "name": "cmd-inject-deploy-v2",
                 "type": "local",
-                "digest": "sha256:ee56258e9087bba393f6c5ebf8b9101c65ea37e236ba8f900edc71129b6d8a12",
+                "digest": "sha256:5fed20aeff144e616ab97c9de7523e50295e053f0b7bffbe65f9b9c7e0a66209",
                 "source": "rles",
                 "path": "/mnt/c/SolumnAI/environments/rles/cmd-inject-deploy-v2"
             },

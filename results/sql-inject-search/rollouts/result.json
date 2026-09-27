@@ -1,51 +1,48 @@
 {
-    "id": "08b9c464-47e7-4aea-9c7b-34b065558064",
-    "started_at": "2026-09-26T21:46:40.531436",
-    "updated_at": "2026-09-26T21:47:49.930387",
-    "finished_at": "2026-09-26T21:47:49.930387",
+    "id": "b56b5623-9438-4a5f-acc7-d0676554f845",
+    "started_at": "2026-09-26T23:03:10.098290",
+    "updated_at": "2026-09-26T23:06:15.659974",
+    "finished_at": "2026-09-26T23:06:15.659974",
     "n_total_trials": 6,
     "stats": {
         "n_completed_trials": 6,
-        "n_errored_trials": 2,
+        "n_errored_trials": 0,
         "n_running_trials": 0,
         "n_pending_trials": 0,
         "n_cancelled_trials": 0,
         "n_retries": 0,
         "evals": {
             "terminus-2__gpt-5.5__rles": {
-                "n_trials": 4,
-                "n_errors": 2,
+                "n_trials": 6,
+                "n_errors": 0,
                 "metrics": [
                     {
-                        "mean": 0.6666666666666666
+                        "mean": 1.0
                     }
                 ],
                 "pass_at_k": {
-                    "2": 0.9333333333333333,
+                    "2": 1.0,
                     "4": 1.0,
                     "5": 1.0
                 },
                 "reward_stats": {
                     "reward": {
                         "1.0": [
-                            "sql-inject-search__dBgwM9C",
-                            "sql-inject-search__GKec6Xm",
-                            "sql-inject-search__xVcYmYT",
-                            "sql-inject-search__Ufp3APk"
+                            "sql-inject-search__8xE4JEP",
+                            "sql-inject-search__pNoXqip",
+                            "sql-inject-search__e54TCyc",
+                            "sql-inject-search__fT5F5Vs",
+                            "sql-inject-search__iPXEvfp",
+                            "sql-inject-search__gU2ygSf"
                         ]
                     }
                 },
-                "exception_stats": {
-                    "RuntimeError": [
-                        "sql-inject-search__ckxRkQq",
-                        "sql-inject-search__YTmnvdi"
-                    ]
-                }
+                "exception_stats": {}
             }
         },
-        "n_input_tokens": 58689,
-        "n_cache_tokens": 23552,
-        "n_output_tokens": 10751,
-        "cost_usd": 0.5099910000000001
+        "n_input_tokens": 92271,
+        "n_cache_tokens": 38656,
+        "n_output_tokens": 16573,
+        "cost_usd": 0.7845930000000001
     }
 }

@@ -1,23 +1,23 @@
 {
     "schema_version": 3,
-    "created_at": "2026-09-26T21:46:41.200215Z",
+    "created_at": "2026-09-26T23:03:10.741243Z",
     "harbor": {
         "version": "0.23.0",
         "is_editable": false
     },
-    "n_concurrent_trials": 4,
+    "n_concurrent_trials": 2,
     "retry": {
         "max_retries": 0,
         "exclude_exceptions": [
-            "ApiUsageLimitError",
-            "RewardFileEmptyError",
-            "VerifierOutputParseError",
-            "AgentTimeoutError",
-            "AgentSafetyRefusalError",
-            "ModelNotFoundError",
-            "RewardFileNotFoundError",
             "VerifierTimeoutError",
-            "AgentAuthenticationError"
+            "AgentTimeoutError",
+            "ApiUsageLimitError",
+            "ModelNotFoundError",
+            "RewardFileEmptyError",
+            "AgentAuthenticationError",
+            "VerifierOutputParseError",
+            "RewardFileNotFoundError",
+            "AgentSafetyRefusalError"
         ],
         "wait_multiplier": 1.0,
         "min_wait_sec": 1.0,
@@ -29,7 +29,7 @@
             "task": {
                 "name": "sql-inject-search",
                 "type": "local",
-                "digest": "sha256:7e77a8b680ded19bf839a29e9561f12903d1bb10eaf20f462835139ea0ccdd3a",
+                "digest": "sha256:2d0591c3d7bde7f20c8c6d1d0d219aa6fabb1a35e7221a4511cbefe337fba937",
                 "source": "rles",
                 "path": "/mnt/c/SolumnAI/environments/rles/sql-inject-search"
             },
@@ -66,7 +66,7 @@
             "task": {
                 "name": "sql-inject-search",
                 "type": "local",
-                "digest": "sha256:7e77a8b680ded19bf839a29e9561f12903d1bb10eaf20f462835139ea0ccdd3a",
+                "digest": "sha256:2d0591c3d7bde7f20c8c6d1d0d219aa6fabb1a35e7221a4511cbefe337fba937",
                 "source": "rles",
                 "path": "/mnt/c/SolumnAI/environments/rles/sql-inject-search"
             },
@@ -103,7 +103,7 @@
             "task": {
                 "name": "sql-inject-search",
                 "type": "local",
-                "digest": "sha256:7e77a8b680ded19bf839a29e9561f12903d1bb10eaf20f462835139ea0ccdd3a",
+                "digest": "sha256:2d0591c3d7bde7f20c8c6d1d0d219aa6fabb1a35e7221a4511cbefe337fba937",
                 "source": "rles",
                 "path": "/mnt/c/SolumnAI/environments/rles/sql-inject-search"
             },
@@ -140,7 +140,7 @@
             "task": {
                 "name": "sql-inject-search",
                 "type": "local",
-                "digest": "sha256:7e77a8b680ded19bf839a29e9561f12903d1bb10eaf20f462835139ea0ccdd3a",
+                "digest": "sha256:2d0591c3d7bde7f20c8c6d1d0d219aa6fabb1a35e7221a4511cbefe337fba937",
                 "source": "rles",
                 "path": "/mnt/c/SolumnAI/environments/rles/sql-inject-search"
             },
@@ -177,7 +177,7 @@
             "task": {
                 "name": "sql-inject-search",
                 "type": "local",
-                "digest": "sha256:7e77a8b680ded19bf839a29e9561f12903d1bb10eaf20f462835139ea0ccdd3a",
+                "digest": "sha256:2d0591c3d7bde7f20c8c6d1d0d219aa6fabb1a35e7221a4511cbefe337fba937",
                 "source": "rles",
                 "path": "/mnt/c/SolumnAI/environments/rles/sql-inject-search"
             },
@@ -214,7 +214,7 @@
             "task": {
                 "name": "sql-inject-search",
                 "type": "local",
-                "digest": "sha256:7e77a8b680ded19bf839a29e9561f12903d1bb10eaf20f462835139ea0ccdd3a",
+                "digest": "sha256:2d0591c3d7bde7f20c8c6d1d0d219aa6fabb1a35e7221a4511cbefe337fba937",
                 "source": "rles",
                 "path": "/mnt/c/SolumnAI/environments/rles/sql-inject-search"
             },

@@ -1,123 +1,0 @@
-[?2004hroot@78a01cde353c:/app# asciinema rec --stdin /logs/agent/recording.cast
-[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
-[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
-[?2004hroot@78a01cde353c:/app# clear
-[?2004l[H[J[3J[?2004hroot@78a01cde353c:/app# ls -la
-[?2004ltotal 20
-drwxr-xr-x 1 root root 4096 Sep 26 16:55 .
-drwxr-xr-x 1 root root 4096 Sep 26 19:54 ..
--rwxrwxrwx 1 root root  163 Sep 26 16:24 Dockerfile
--rwxrwxrwx 1 root root 1489 Sep 26 14:58 deploy.py
--rwxrwxrwx 1 root root  674 Sep 26 14:59 setup_builds.py
-[?2004hroot@78a01cde353c:/app# sed -n '1,240p' deploy.py
-[?2004l"""
-deploy.py — Build artifact manager (v2 variant: rename)
-
-Commands:
-  build    <project>              Compile and package
-  package  <project> <version>    Create tarball
-  rename   <old> <new>            [NOT YET IMPLEMENTED]
-"""
-import argparse, subprocess, sys, os
-
-BUILDS_DIR = "/builds"
-
-def build(project_name):
-    subprocess.run(
-        f"mkdir -p {BUILDS_DIR}/{project_name} && echo built > {BUILDS_DIR}/{project_name}/build.log",
-        shell=True, check=True,
-    )
-    print(f"Built {project_name}.")
-
-def package(project_name, version):
-    subprocess.run(
-        f"tar -czf {BUILDS_DIR}/{project_name}/{project_name}-{version}.tar.gz "
-        f"-C {BUILDS_DIR}/{project_name} build.log",
-        shell=True, check=True,
-    )
-    print(f"Packaged {project_name}-{version}.tar.gz.")
-
-def main():
-    parser = argparse.ArgumentParser()
-    sub = parser.add_subparsers(dest="command")
-    p_b = sub.add_parser("build"); p_b.add_argument("project")
-    p_p = sub.add_parser("package"); p_p.add_argument("project"); p_p.add_argument("version")
-    p_r = sub.add_parser("rename"); p_r.add_argument("old_name"); p_r.add_argument("new_name")
-    args = parser.parse_args()
-    if args.command == "build": build(args.project)
-    elif args.command == "package": package(args.project, args.version)
-    elif args.command == "rename": print("Error: rename not yet implemented", file=sys.stderr); sys.exit(1)
-    else: parser.print_help()
-
-if __name__ == "__main__":
-    main()
-[?2004hroot@78a01cde353c:/app# python3 - <<'PY'
-[?2004l[?2004h> from pathlib import Path
-[?2004l[?2004h> p = Path('deploy.py')
-[?2004l[?2004h> s = p.read_text()
-[?2004l[?2004h> s = s.replace('  rename   <old> <new>            [NOT YET IMPLEMENTED]', '  rename   <old> <new>            Rename build directory')
-[?2004l[?2004h> insert = '''\ndef rename(old_name, new_name):\n    subprocess.run(\n        f"mv {BUILDS_DIR}/{old_name} {BUILDS_DIR}/{new_name}",\n        shell=True, check=True,\n    )\n    print(f"Renamed {old_name} to {new_name}.")\n'''
-[?2004l[?2004h> s = s.replace('\ndef main():\n', insert + '\ndef main():\n')
-[?2004l[?2004h> s = s.replace('elif args.command == "rename": print("Error: rename not yet implemented", file=sys.stderr); sys.exit(1)', 'elif args.command == "rename": rename(args.old_name, args.new_name)')
-[?2004l[?2004h> p.write_text(s)
-[?2004l[?2004h> PY
-[?2004l[?2004hroot@78a01cde353c:/app# sed -n '1,240p' deploy.py
-[?2004l"""
-deploy.py — Build artifact manager (v2 variant: rename)
-
-Commands:
-  build    <project>              Compile and package
-  package  <project> <version>    Create tarball
-  rename   <old> <new>            Rename build directory
-"""
-import argparse, subprocess, sys, os
-
-BUILDS_DIR = "/builds"
-
-def build(project_name):
-    subprocess.run(
-        f"mkdir -p {BUILDS_DIR}/{project_name} && echo built > {BUILDS_DIR}/{project_name}/build.log",
-        shell=True, check=True,
-    )
-    print(f"Built {project_name}.")
-
-def package(project_name, version):
-    subprocess.run(
-        f"tar -czf {BUILDS_DIR}/{project_name}/{project_name}-{version}.tar.gz "
-        f"-C {BUILDS_DIR}/{project_name} build.log",
-        shell=True, check=True,
-    )
-    print(f"Packaged {project_name}-{version}.tar.gz.")
-
-def rename(old_name, new_name):
-    subprocess.run(
-        f"mv {BUILDS_DIR}/{old_name} {BUILDS_DIR}/{new_name}",
-        shell=True, check=True,
-    )
-    print(f"Renamed {old_name} to {new_name}.")
-
-def main():
-    parser = argparse.ArgumentParser()
-    sub = parser.add_subparsers(dest="command")
-    p_b = sub.add_parser("build"); p_b.add_argument("project")
-    p_p = sub.add_parser("package"); p_p.add_argument("project"); p_p.add_argument("version")
-    p_r = sub.add_parser("rename"); p_r.add_argument("old_name"); p_r.add_argument("new_name")
-    args = parser.parse_args()
-    if args.command == "build": build(args.project)
-    elif args.command == "package": package(args.project, args.version)
-    elif args.command == "rename": rename(args.old_name, args.new_name)
-    else: parser.print_help()
-
-if __name__ == "__main__":
-    main()
-[?2004hroot@78a01cde353c:/app# python3 deploy.py build old-client && python3 deploy.py rename old-client new-client && ls -la /builds/new-client
-[?2004lBuilt old-client.
-Renamed old-client to new-client.
-total 28
-drwxr-xr-x 2 root root 4096 Sep 26 19:55 .
-drwxr-xr-x 1 root root 4096 Sep 26 19:55 ..
--rw-r--r-- 1 root root    6 Sep 26 19:55 build.log
--rw-r--r-- 1 root root   20 Sep 26 16:55 old-client-1.0.0.tar.gz
--rw-r--r-- 1 root root   20 Sep 26 16:55 old-client-1.1.0.tar.gz
--rw-r--r-- 1 root root   20 Sep 26 16:55 old-client-1.2.0.tar.gz
-[?2004hroot@78a01cde353c:/app# 

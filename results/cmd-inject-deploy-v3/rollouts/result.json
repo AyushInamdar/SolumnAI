@@ -1,8 +1,8 @@
 {
-    "id": "c957f4db-fdb1-4af2-9d83-8147515e503f",
-    "started_at": "2026-09-26T19:55:38.370034",
-    "updated_at": "2026-09-26T19:59:14.612361",
-    "finished_at": "2026-09-26T19:59:14.612361",
+    "id": "c0fe34b2-9e60-453c-8c92-912a21cbc202",
+    "started_at": "2026-09-26T22:37:54.940003",
+    "updated_at": "2026-09-26T22:42:14.185947",
+    "finished_at": "2026-09-26T22:42:14.185947",
     "n_total_trials": 6,
     "stats": {
         "n_completed_trials": 6,
@@ -28,21 +28,21 @@
                 "reward_stats": {
                     "reward": {
                         "1.0": [
-                            "cmd-inject-deploy-v3__2ReeiiL",
-                            "cmd-inject-deploy-v3__imoAQiS",
-                            "cmd-inject-deploy-v3__2ghtdvs",
-                            "cmd-inject-deploy-v3__YJs2jnD",
-                            "cmd-inject-deploy-v3__7CHjHrh",
-                            "cmd-inject-deploy-v3__sjuAbT8"
+                            "cmd-inject-deploy-v3__Q9waGCk",
+                            "cmd-inject-deploy-v3__5F3FMp2",
+                            "cmd-inject-deploy-v3__zFskqFa",
+                            "cmd-inject-deploy-v3__ewyUyXe",
+                            "cmd-inject-deploy-v3__BC2qgH4",
+                            "cmd-inject-deploy-v3__xShrZje"
                         ]
                     }
                 },
                 "exception_stats": {}
             }
         },
-        "n_input_tokens": 113213,
-        "n_cache_tokens": 51712,
-        "n_output_tokens": 23921,
-        "cost_usd": 1.050991
+        "n_input_tokens": 122995,
+        "n_cache_tokens": 57344,
+        "n_output_tokens": 27583,
+        "cost_usd": 1.1844170000000003
     }
 }

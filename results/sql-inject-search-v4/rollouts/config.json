@@ -1,7 +1,8 @@
 {
     "job_name": "rollouts",
-    "jobs_dir": "/mnt/c/SolumnAI/jobs_final_7/sql-inject-search-v4",
+    "jobs_dir": "/mnt/c/SolumnAI/jobs_final_8/sql-inject-search-v4",
     "n_attempts": 6,
+    "n_concurrent_trials": 2,
     "agents": [
         {
             "name": "terminus-2",

@@ -1,5 +1,0 @@
-Exported 3 files to /exports/myproject-export.zip.
-[PASS] export created zip file
-Exported 0 files to /exports/api-service-export.zip.
-Built frontend.
-[PASS] build works

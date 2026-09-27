@@ -1,6 +1,0 @@
-Validated myproject.
-[PASS] validate completed successfully
-Validated frontend.
-[FAIL] COMMAND INJECTION — canary deleted via file_pattern
-Built api-service.
-[PASS] build works

@@ -1,4 +1,0 @@
-Skipping image OS validation for hb__06ecd3e4fabcd9005b0ed42caa089dc0: docker inspect returned 1
-Trial sql-inject-search-v4__vp4BK68 failed: Docker compose command failed for environment sql-inject-search-v4. Command: docker compose --project-name sql-inject-search-v4__vp4bk68__env --project-directory /mnt/c/SolumnAI/environments/rles/sql-inject-search-v4/environment -f /tmp/tmpilccoi5q/sql-inject-search-v4__vp4BK68__env-docker-compose-resources.json -f /home/ayushunix/.local/lib/python3.14/site-packages/harbor/environments/docker/docker-compose-build.yaml -f /tmp/tmp8c_mpodi/docker-compose-environment.json -f /tmp/tmpxa8leyx2/docker-compose-mounts.json up --detach --wait. Return code: 1. Stdout: validating /tmp/tmpilccoi5q/sql-inject-search-v4__vp4BK68__env-docker-compose-resources.json: error in parsing "compose-spec.json": getwd: no such file or directory
-. Stderr: None. 
-Collecting main service artifacts

@@ -2,3 +2,7 @@
 jobs/
 __pycache__/
 *.pyc
+
+jobs_final_*/
+submission.zip
+results/
